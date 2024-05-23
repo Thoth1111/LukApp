@@ -7,5 +7,9 @@ class CreateSearches < ActiveRecord::Migration[7.1]
 
       t.timestamps
     end
+
+    add_index :searches, :user_ip_address
+    add_index :searches, :query
+    add_index :searches, :completed
   end
 end
