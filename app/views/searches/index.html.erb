@@ -20,7 +20,10 @@
         <% else %>
             <ul>
                 <% @search_history.each do |search| %>
-                    <li><%= search.query %></li>
+                    <li>
+                        <h5><%= search.query %></h5>
+                        <p>Searched: <%= search.count %> times</p>
+                    </li>
                 <% end %>
             </ul>
         <% end %>
