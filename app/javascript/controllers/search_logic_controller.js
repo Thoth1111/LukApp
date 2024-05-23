@@ -18,7 +18,7 @@ export default class extends Controller {
         'Content-Type': 'application/json',
         'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
       },
-      body: JSON.stringify({ query: query })
+      body: JSON.stringify({ query: query, completed: false})
     })
       .then(response => response.json())
       .then(data => {
