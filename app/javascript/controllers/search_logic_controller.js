@@ -2,7 +2,7 @@ import { Controller } from "@hotwired/stimulus"
 
 // Connects to data-controller="search-logic"
 export default class extends Controller {
-  static targets = ["input", "submit_button", "suggestions"]
+  static targets = ["input", "submit_button", "history", "suggestions"]
 
   connect() {
     this.inputTarget.addEventListener('input', this.handleInputChange.bind(this))
@@ -10,7 +10,12 @@ export default class extends Controller {
   }
 
   search() {
-    const query = this.inputTarget.value
+    const query = this.inputTarget.value.trim().toLowerCase()
+
+    if (query.length === 0) {
+      this.suggestionsTarget.innerHTML = '';
+      return;
+    }
 
     fetch('/searches', {
       method: 'POST',
@@ -18,26 +23,61 @@ export default class extends Controller {
         'Content-Type': 'application/json',
         'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
       },
-      body: JSON.stringify({ query: query, completed: false})
+      body: JSON.stringify({ query: query, completed: false })
     })
       .then(response => response.json())
       .then(data => {
-        console.log(data.status)
-        // this.resultsTarget.innerHTML = data.results
+        this.showSuggestions(data.suggestions)
       })
+      .catch(error => {
+        console.error('Error:', error);
+      });
+  }
+
+  deleteIncompleteQueries() {
+    fetch('/searches/delete_incomplete_queries', {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+      }
+    })
+      .then(response => response.json())
+      .then(data => {
+        console.log(data.status);
+      })
+      .catch(error => {
+        console.error('Error:', error);
+      });
   }
 
   handleInputChange = (e) => {
     e.preventDefault()
     clearTimeout(this.timer)
+    if (this.inputTarget.value.length < 1) {      
+      this.deleteIncompleteQueries();
+      this.suggestionsTarget.innerHTML = '';
+      return;
+    }      
     this.timer = setTimeout(() => {
       this.search();
     }, 500);
   }
 
+  showSuggestions(suggestions) {
+    this.suggestionsTarget.innerHTML = '';
+    suggestions.forEach(suggestion => {
+      const listItem = document.createElement('li');
+      listItem.innerHTML = `
+        <p>${suggestion}</p>
+      `;
+      this.suggestionsTarget.appendChild(listItem);
+    });
+  }
+
   resolveSearches = (e) => {
     e.preventDefault()
-    const query = this.inputTarget.value
+    const query = this.inputTarget.value.trim().toLowerCase()
 
     fetch('/searches/resolve_queries', {
       method: 'POST',
@@ -49,9 +89,32 @@ export default class extends Controller {
     })
       .then(response => response.json())
       .then(data => {
-        console.log(data.status)
+        this.updateSearchHistory(data.new_query)
         this.inputTarget.value = '';
-        // this.resultsTarget.innerHTML = data.results         
       })
+      .catch(error => {
+        console.error('Error:', error);
+      });
+  }
+
+  updateSearchHistory(newQuery) {
+    // Check if the query already exists in the DOM
+    const existingQuery = Array.from(this.historyTarget.children).find(item => {
+      const queryHead = item.querySelector('h5');
+      return queryHead && queryHead.textContent.trim() === newQuery.query;
+    });
+
+    if (existingQuery) {
+      const countElement = existingQuery.querySelector('p');
+      const count = parseInt(countElement.textContent.split(':')[1].trim());
+      countElement.textContent = `Searched: ${count + 1} times`;
+    } else {
+      const listItem = document.createElement('li');
+      listItem.innerHTML = `
+        <h5>${newQuery.query}</h5>
+        <p>Searched: ${newQuery.count} times</p>
+      `;
+      this.historyTarget.appendChild(listItem);
+    }
   }
 }
