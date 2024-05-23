@@ -14,8 +14,15 @@
     </div>
     <hr>
     <div>
-        <p>Your Top Searches:</p>
-        <ul>
-        </ul>
+        <h4>Your Top Searches:</h4>
+        <% if @search_history.empty? %>
+                <p>No searches found</p>
+        <% else %>
+            <ul>
+                @search_history.each do |search|
+                    <li><%= search.query %></li>
+                end
+            </ul>
+        <% end %>
     </div>
 </div>
