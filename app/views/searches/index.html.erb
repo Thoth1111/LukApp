@@ -7,25 +7,21 @@
             <%= f.text_field :query, placeholder: 'Look something up...', data: { search_logic_target: 'input' } %>
             <%= f.submit 'Search', data: { search_logic_target: 'submit_button'} %>
         <% end %>
-    </div>
-    <div>
-        <ul data-search-target="suggestions">
+        <ul data-search-logic-target="suggestions">
         </ul>
     </div>
     <hr>
     <div>
-        <h4>Your Top Searches:</h4>
-        <% if @search_history.empty? %>
-                <p>No searches found</p>
-        <% else %>
-            <ul>
+        <h4>Your Top Searches:</h4>        
+        <ul data-search-logic-target="history">
+            <% if @search_history %>
                 <% @search_history.each do |search| %>
                     <li>
                         <h5><%= search.query %></h5>
                         <p>Searched: <%= search.count %> times</p>
                     </li>
                 <% end %>
-            </ul>
-        <% end %>
+            <% end %>
+        </ul>
     </div>
 </div>
