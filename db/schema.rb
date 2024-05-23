@@ -18,6 +18,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_05_23_051605) do
     t.string "user_ip_address"
     t.string "query"
     t.boolean "completed"
+    t.integer "count", default: 0
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["completed"], name: "index_searches_on_completed"
