@@ -3,6 +3,7 @@ Rails.application.routes.draw do
   resources :searches, only: [:index, :create] do
     collection do
       post :resolve_queries
+      delete :delete_incomplete_queries
     end
   end
 
