@@ -12,11 +12,13 @@ export default class extends Controller {
   search() {
     const query = this.inputTarget.value.trim().toLowerCase()
 
+    // Reset suggestions if query is empty or cleared
     if (query.length === 0) {
       this.suggestionsTarget.innerHTML = '';
       return;
     }
 
+    // Post incomplete query to the server and return suggestions
     fetch('/searches', {
       method: 'POST',
       headers: {
@@ -34,6 +36,7 @@ export default class extends Controller {
       });
   }
 
+  // Delete incomplete queries if user clears the input field without submission
   deleteIncompleteQueries() {
     fetch('/searches/delete_incomplete_queries', {
       method: 'DELETE',
@@ -51,6 +54,7 @@ export default class extends Controller {
       });
   }
 
+  // handler to submit the query 500ms after the user stops typing
   handleInputChange = (e) => {
     e.preventDefault()
     clearTimeout(this.timer)
@@ -64,6 +68,7 @@ export default class extends Controller {
     }, 500);
   }
 
+  // Display suggestions to the user
   showSuggestions(suggestions) {
     this.suggestionsTarget.innerHTML = '';
     suggestions.forEach(suggestion => {
@@ -75,6 +80,7 @@ export default class extends Controller {
     });
   }
 
+  // Resolve the search query and update the search history on submit
   resolveSearches = (e) => {
     e.preventDefault()
     const query = this.inputTarget.value.trim().toLowerCase()
@@ -97,8 +103,8 @@ export default class extends Controller {
       });
   }
 
+  // Update the search history in the DOM
   updateSearchHistory(newQuery) {
-    // Check if the query already exists in the DOM
     const existingQuery = Array.from(this.historyTarget.children).find(item => {
       const queryHead = item.querySelector('h5');
       return queryHead && queryHead.textContent.trim() === newQuery.query;
