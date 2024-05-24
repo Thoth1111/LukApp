@@ -1,24 +1,22 @@
-<div data-controller="search-logic">
-    <div>
-    <%= image_tag "LukApp_logo.png", alt: "LukApp logo", width: 100, height: 100 %>
-    </div>
-    <div>
+<div data-controller="search-logic" class="w-full">
+    <%= image_tag "LukApp_logo.png", alt: "LukApp logo", width: 150, height: 150, class: "rounded-full mx-auto mt-6 border-4 border-gray-400" %>
+    <div class="w-fit mx-auto mt-12">
         <%= form_with url: resolve_queries_searches_path, method: :post, data: { action: 'submit->search-logic#resolveSearches' } do |f| %>
-            <%= f.text_field :query, placeholder: 'Look something up...', data: { search_logic_target: 'input' } %>
-            <%= f.submit 'Search', data: { search_logic_target: 'submit_button'} %>
+            <%= f.text_field :query, placeholder: 'Look something up...', class: "w-80 border-2 border-gray-400 rounded-md", data: { search_logic_target: 'input' } %>
+            <%= f.submit 'Search', data: { search_logic_target: 'submit_button'}, class: "bg-sky-600 font-semibold cursor-pointer p-2 rounded-md" %>
         <% end %>
-        <ul data-search-logic-target="suggestions">
+        <ul data-search-logic-target="suggestions" class="mt-2">
         </ul>
     </div>
-    <hr>
+    <hr class="my-6 border-t-1 border-sky-400">
     <div>
-        <h4>Your Top Searches:</h4>        
-        <ul data-search-logic-target="history">
+        <h4 class="w-fit mx-auto font-semibold text-stone-700 text-lg mb-6">Your Top Searches:</h4>        
+        <ul data-search-logic-target="history" class="w-1/2 mx-auto bg-white border border-gray-400 px-8 py-4 rounded-md">
             <% if @search_history %>
                 <% @search_history.each do |search| %>
-                    <li>
-                        <h5><%= search.query %></h5>
-                        <p>Searched: <%= search.count %> times</p>
+                    <li class="flex justify-between items-center w-full gap-14 text-stone-600">
+                        <h5 class="text-lg"><%= search.query %></h5>
+                        <p class="text-md">search count: <%= search.count %></p>
                     </li>
                 <% end %>
             <% end %>
