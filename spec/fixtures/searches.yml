@@ -1,0 +1,11 @@
+search1:
+  user_ip_address: '127.0.0.1'
+  query: 'test query'
+  completed: false
+  count: 0
+
+search2:
+  user_ip_address: '127.0.0.1'
+  query: 'test query'
+  completed: false
+  count: 0

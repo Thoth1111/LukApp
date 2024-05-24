@@ -84,6 +84,7 @@ export default class extends Controller {
   resolveSearches = (e) => {
     e.preventDefault()
     const query = this.inputTarget.value.trim().toLowerCase()
+    if (query.length === 0) return;
 
     fetch('/searches/resolve_queries', {
       method: 'POST',
