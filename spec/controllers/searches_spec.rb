@@ -1,6 +1,8 @@
 require 'rails_helper'
 
 RSpec.describe SearchesController, type: :controller do
+    fixtures :searches
+
     describe 'POST #create' do
         let(:query) { 'test query' }
         it 'creates a new search' do
@@ -30,9 +32,6 @@ RSpec.describe SearchesController, type: :controller do
 
     describe 'DELETE #delete_incomplete_queries' do
         it 'deletes all incomplete queries and returns a 200 status code' do
-            create(:search, completed: false)
-            create(:search, completed: false)
-
             expect { delete :delete_incomplete_queries }.to change { Search.where(completed: false).count }.to(0)
             expect(JSON.parse(response.body)['status']).to eq('200')
         end
