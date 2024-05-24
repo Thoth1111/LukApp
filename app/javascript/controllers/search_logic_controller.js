@@ -73,17 +73,21 @@ export default class extends Controller {
     this.suggestionsTarget.innerHTML = '';
     suggestions.forEach(suggestion => {
       const listItem = document.createElement('li');
-      listItem.innerHTML = `
-        <p>${suggestion}</p>
-      `;
+      listItem.classList.add('text-stone-500', 'bg-white', 'p-2', 'w-80', 'cursor-pointer', 'hover:text-stone-800', 'transition', 'duration-300', 'ease-in-out');
+      const suggestedQuery = document.createElement('p');
+      suggestedQuery.textContent = suggestion;
+      suggestedQuery.addEventListener('click', (e) => {
+        this.resolveSearches(e, suggestion);
+      });
+      listItem.appendChild(suggestedQuery);
       this.suggestionsTarget.appendChild(listItem);
     });
   }
 
   // Resolve the search query and update the search history on submit
-  resolveSearches = (e) => {
+  resolveSearches = (e, suggestion = null) => {
     e.preventDefault()
-    const query = this.inputTarget.value.trim().toLowerCase()
+    let query = suggestion ? suggestion.trim().toLowerCase() : this.inputTarget.value.trim().toLowerCase()
     if (query.length === 0) return;
 
     fetch('/searches/resolve_queries', {
@@ -98,6 +102,7 @@ export default class extends Controller {
       .then(data => {
         this.updateSearchHistory(data.new_query)
         this.inputTarget.value = '';
+        this.suggestionsTarget.innerHTML = '';
       })
       .catch(error => {
         console.error('Error:', error);
@@ -114,12 +119,13 @@ export default class extends Controller {
     if (existingQuery) {
       const countElement = existingQuery.querySelector('p');
       const count = parseInt(countElement.textContent.split(':')[1].trim());
-      countElement.textContent = `Searched: ${count + 1} times`;
+      countElement.textContent = `search count ${count + 1}`;
     } else {
       const listItem = document.createElement('li');
+      listItem.classList.add('flex', 'justify-between', 'items-center', 'w-full', 'gap-14', 'text-stone-600');
       listItem.innerHTML = `
-        <h5>${newQuery.query}</h5>
-        <p>Searched: ${newQuery.count} times</p>
+        <h5 class="text-lg">${newQuery.query}</h5>
+        <p class="text-md">search count: ${newQuery.count}</p>
       `;
       this.historyTarget.appendChild(listItem);
     }
